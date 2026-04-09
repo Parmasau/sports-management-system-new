@@ -1,99 +1,83 @@
 @extends('layouts.coach-app')
 @section('title', 'Tactics')
 @section('content')
-<div class="p-8" x-data="{ showAdd: false, showEdit: false, editTactic: {} }">
-
+<div class="p-8">
     @if(session('success'))
-        <div class="mb-4 bg-green-100 text-green-700 px-4 py-3 rounded-lg">{{ session('success') }}</div>
+        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded">
+            {{ session('success') }}
+        </div>
     @endif
 
-    <div class="bg-white rounded-lg shadow-sm p-6">
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-bold">🎯 Tactics</h2>
-            <button @click="showAdd = true" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">+ Add Tactic</button>
-        </div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Tactics List -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">Match Tactics</h2>
+                <a href="{{ route('coach.tactics.create') }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                    <i class="fas fa-plus mr-2"></i>Create Tactic
+                </a>
+            </div>
 
-        @forelse($tactics as $tactic)
-        <div class="bg-gray-50 rounded-lg px-4 py-4 mb-3">
-            <div class="flex justify-between items-start">
-                <div>
-                    <div class="flex items-center space-x-2 mb-1">
-                        <span class="font-bold text-lg">{{ $tactic->formation }}</span>
-                        @if($tactic->is_active)
-                            <span class="bg-green-100 text-green-700 text-xs font-medium px-2 py-1 rounded-full">Active</span>
-                        @endif
-                    </div>
-                    <div class="text-sm text-gray-500 space-y-1">
-                        <div><span class="font-medium">Pressing:</span> {{ $tactic->pressing_style }}</div>
-                        <div><span class="font-medium">Attack:</span> {{ $tactic->attacking_focus }}</div>
-                        <div><span class="font-medium">Set Pieces:</span> {{ $tactic->set_pieces }}</div>
+            <div class="space-y-4 max-h-96 overflow-y-auto">
+                @forelse($tactics as $tactic)
+                <div class="border rounded-lg p-4 hover:shadow-lg transition {{ $loop->first ? 'bg-blue-50 border-blue-500' : '' }}">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-2">
+                                <h3 class="text-lg font-bold text-blue-600">{{ $tactic->formation }}</h3>
+                                <span class="px-2 py-1 rounded text-xs 
+                                    @if($tactic->is_active) bg-green-100 text-green-800
+                                    @else bg-gray-100 text-gray-800 @endif">
+                                    {{ $tactic->is_active ? 'Active' : 'Inactive' }}
+                                </span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 text-sm">
+                                <div><strong>Pressing:</strong> {{ $tactic->pressing_style }}</div>
+                                <div><strong>Attack Focus:</strong> {{ $tactic->attacking_focus }}</div>
+                            </div>
+                            <p class="text-sm text-gray-600 mt-2"><strong>Set Pieces:</strong> {{ Str::limit($tactic->set_pieces, 50) }}</p>
+                        </div>
+                        <div class="flex space-x-2">
+                            <a href="{{ route('coach.tactics.show', $tactic->id) }}" class="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600">
+                                <i class="fas fa-eye"></i> View Field
+                            </a>
+                            <a href="{{ route('coach.tactics.edit', $tactic->id) }}" class="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <form action="{{ route('coach.tactics.destroy', $tactic->id) }}" method="POST" onsubmit="return confirm('Delete this tactic?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
-                <div class="flex flex-col space-y-2 items-end">
-                    @if(!$tactic->is_active)
-                    <form method="POST" action="{{ route('coach.tactics.activate', $tactic) }}">
-                        @csrf @method('PATCH')
-                        <button class="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600">Set Active</button>
-                    </form>
-                    @endif
-                    <button @click="editTactic = {{ $tactic->toJson() }}; showEdit = true"
-                        class="bg-yellow-500 text-white px-3 py-1 rounded text-sm hover:bg-yellow-600">Edit</button>
-                    <form method="POST" action="{{ route('coach.tactics.destroy', $tactic) }}" onsubmit="return confirm('Delete tactic?')">
-                        @csrf @method('DELETE')
-                        <button class="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600">Delete</button>
-                    </form>
+                @empty
+                <div class="text-center p-8 text-gray-500">
+                    No tactics created. <a href="{{ route('coach.tactics.create') }}" class="text-blue-600">Create your first tactic</a>
                 </div>
+                @endforelse
             </div>
         </div>
-        @empty
-            <p class="text-gray-400 text-center py-8">No tactics yet. Add your first tactic.</p>
-        @endforelse
-    </div>
-
-    <!-- Add Modal -->
-    <div x-show="showAdd" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" x-transition>
-        <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md" @click.outside="showAdd = false">
-            <h3 class="text-xl font-bold mb-4">Add Tactic</h3>
-            <form method="POST" action="{{ route('coach.tactics.store') }}" class="space-y-3">
-                @csrf
-                <select name="formation" required class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400">
-                    <option value="">Select Formation</option>
-                    @foreach(['4-3-3','4-4-2','3-5-2','5-3-2','4-2-3-1','3-4-3'] as $f)
-                        <option value="{{ $f }}">{{ $f }}</option>
-                    @endforeach
-                </select>
-                <input name="pressing_style" placeholder="Pressing Style" required class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400">
-                <input name="attacking_focus" placeholder="Attacking Focus" required class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400">
-                <input name="set_pieces" placeholder="Set Pieces Strategy" required class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400">
-                <div class="flex justify-end space-x-2 pt-2">
-                    <button type="button" @click="showAdd = false" class="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200">Cancel</button>
-                    <button type="submit" class="px-4 py-2 rounded-lg bg-green-500 hover:bg-green-600 text-white">Save</button>
+        
+        <!-- Formation Preview -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Formation Preview</h2>
+            @if($tactics->where('is_active', true)->first())
+                @php $activeTactic = $tactics->where('is_active', true)->first(); @endphp
+                <x-soccer-field :formation="$activeTactic->formation" />
+                <div class="mt-4 text-center text-gray-600">
+                    <p class="text-sm">Currently Active: <strong class="text-blue-600">{{ $activeTactic->formation }}</strong></p>
+                    <p class="text-xs mt-1">{{ $activeTactic->pressing_style }} | {{ $activeTactic->attacking_focus }}</p>
                 </div>
-            </form>
+            @else
+                <div class="text-center p-8 text-gray-500">
+                    No active tactic. Please activate a tactic to see formation preview.
+                </div>
+            @endif
         </div>
     </div>
-
-    <!-- Edit Modal -->
-    <div x-show="showEdit" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" x-transition>
-        <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-md" @click.outside="showEdit = false">
-            <h3 class="text-xl font-bold mb-4">Edit Tactic</h3>
-            <form method="POST" :action="`/coach/tactics/${editTactic.id}`" class="space-y-3">
-                @csrf @method('PUT')
-                <select name="formation" required class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400">
-                    @foreach(['4-3-3','4-4-2','3-5-2','5-3-2','4-2-3-1','3-4-3'] as $f)
-                        <option :selected="editTactic.formation === '{{ $f }}'" value="{{ $f }}">{{ $f }}</option>
-                    @endforeach
-                </select>
-                <input name="pressing_style" :value="editTactic.pressing_style" placeholder="Pressing Style" required class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400">
-                <input name="attacking_focus" :value="editTactic.attacking_focus" placeholder="Attacking Focus" required class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400">
-                <input name="set_pieces" :value="editTactic.set_pieces" placeholder="Set Pieces" required class="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400">
-                <div class="flex justify-end space-x-2 pt-2">
-                    <button type="button" @click="showEdit = false" class="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200">Cancel</button>
-                    <button type="submit" class="px-4 py-2 rounded-lg bg-yellow-500 hover:bg-yellow-600 text-white">Update</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
 </div>
 @endsection

@@ -3,30 +3,57 @@
 @section('content')
 <div class="p-8">
     <div class="bg-white rounded-lg shadow-lg p-6 max-w-2xl mx-auto">
-        <div class="flex items-center space-x-6 mb-8">
-            <img src="https://ui-avatars.com/api/?name={{ Auth::user()->name }}&background=667eea&color=fff&size=100&rounded=true" class="w-24 h-24 rounded-full">
+        <div class="text-center">
+            @if($player->image)
+                <img src="{{ asset('storage/' . $player->image) }}" class="w-32 h-32 rounded-full mx-auto mb-4 object-cover">
+            @else
+                <img src="https://ui-avatars.com/api/?name={{ urlencode($player->name) }}&background=667eea&color=fff&size=128" class="w-32 h-32 rounded-full mx-auto mb-4">
+            @endif
+            <h2 class="text-2xl font-bold">{{ $player->name }}</h2>
+            <p class="text-gray-600">{{ $player->email }}</p>
+            <p class="text-purple-600 font-semibold mt-2">{{ $player->position }}</p>
+        </div>
+        <div class="mt-6 border-t pt-4 grid grid-cols-2 gap-4">
             <div>
-                <h2 class="text-2xl font-bold">{{ Auth::user()->name }}</h2>
-                <p class="text-gray-500">Player · Forward · #10</p>
-                <p class="text-gray-400 text-sm">{{ Auth::user()->email }}</p>
+                <p class="text-gray-500 text-sm">Jersey Number</p>
+                <p class="font-semibold text-lg">#{{ $player->jersey_number }}</p>
+            </div>
+            <div>
+                <p class="text-gray-500 text-sm">Status</p>
+                <p class="font-semibold text-lg">
+                    <span class="px-2 py-1 rounded text-xs bg-green-100 text-green-800">{{ ucfirst($player->status) }}</span>
+                </p>
+            </div>
+            <div>
+                <p class="text-gray-500 text-sm">Member Since</p>
+                <p class="font-semibold">{{ Auth::user()->created_at->format('F j, Y') }}</p>
+            </div>
+            <div>
+                <p class="text-gray-500 text-sm">Team</p>
+                <p class="font-semibold">{{ $player->team ? $player->team->name : 'Not Assigned' }}</p>
             </div>
         </div>
-
-        <form method="POST" action="{{ route('profile.update') }}">
-            @csrf
-            @method('PATCH')
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                    <input type="text" name="name" value="{{ Auth::user()->name }}" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <div class="mt-6 border-t pt-4">
+            <h3 class="font-bold mb-2">Performance Stats</h3>
+            <div class="grid grid-cols-4 gap-2 text-center">
+                <div class="bg-blue-50 p-2 rounded">
+                    <p class="text-2xl font-bold text-blue-600">{{ $player->matches ?? 0 }}</p>
+                    <p class="text-xs text-gray-600">Matches</p>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                    <input type="email" name="email" value="{{ Auth::user()->email }}" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <div class="bg-green-50 p-2 rounded">
+                    <p class="text-2xl font-bold text-green-600">{{ $player->goals ?? 0 }}</p>
+                    <p class="text-xs text-gray-600">Goals</p>
                 </div>
-                <button type="submit" class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 rounded-lg transition">Save Changes</button>
+                <div class="bg-yellow-50 p-2 rounded">
+                    <p class="text-2xl font-bold text-yellow-600">{{ $player->assists ?? 0 }}</p>
+                    <p class="text-xs text-gray-600">Assists</p>
+                </div>
+                <div class="bg-purple-50 p-2 rounded">
+                    <p class="text-2xl font-bold text-purple-600">{{ $player->rating ?? 0 }}</p>
+                    <p class="text-xs text-gray-600">Rating</p>
+                </div>
             </div>
-        </form>
+        </div>
     </div>
 </div>
 @endsection
