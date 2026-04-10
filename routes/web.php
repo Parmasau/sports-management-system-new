@@ -78,20 +78,30 @@ Route::middleware(['auth'])->prefix('coach')->name('coach.')->group(function () 
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/users', [AdminController::class, 'users'])->name('users');
+    Route::delete('/users/{id}', [AdminController::class, 'destroyUser'])->name('users.destroy');
     Route::get('/teams', [AdminController::class, 'teams'])->name('teams');
+    Route::post('/teams', [AdminController::class, 'storeTeam'])->name('teams.store');
+    Route::delete('/teams/{id}', [AdminController::class, 'destroyTeam'])->name('teams.destroy');
     Route::get('/matches', [AdminController::class, 'matches'])->name('matches');
+    Route::post('/matches', [AdminController::class, 'storeMatch'])->name('matches.store');
+    Route::delete('/matches/{id}', [AdminController::class, 'destroyMatch'])->name('matches.destroy');
     Route::get('/reports', [AdminController::class, 'reports'])->name('reports');
     Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
 });
 
-// Profile Routes
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+// Profile Routes (Fixed)
+Route::middleware(['auth'])->prefix('profile')->name('profile.')->group(function () {
+    Route::get('/', [ProfileController::class, 'edit'])->name('edit');
+    Route::patch('/', [ProfileController::class, 'update'])->name('update');
+    Route::delete('/', [ProfileController::class, 'destroy'])->name('destroy');
 });
 
-// API routes for live data updates (must be before the auth.php require)
+// Simple profile route for all users (alternative)
+Route::middleware(['auth'])->get('/my-profile', function () {
+    return view('profile.simple', ['user' => Auth::user()]);
+})->name('my-profile');
+
+// API routes for live data updates
 Route::middleware(['auth'])->prefix('api')->group(function () {
     Route::get('/dashboard-stats', function () {
         return response()->json([

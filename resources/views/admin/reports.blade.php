@@ -2,74 +2,75 @@
 @section('title', 'Reports')
 @section('content')
 <div class="p-8">
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
-        <div class="bg-gray-50 rounded-lg p-6"><div class="text-3xl mb-2">👥</div><div class="text-2xl font-bold">{{ $totalUsers }}</div><div class="text-gray-600">Total Users</div></div>
-        <div class="bg-gray-50 rounded-lg p-6"><div class="text-3xl mb-2">⚽</div><div class="text-2xl font-bold">{{ $totalPlayers }}</div><div class="text-gray-600">Players</div></div>
-        <div class="bg-gray-50 rounded-lg p-6"><div class="text-3xl mb-2">🏟️</div><div class="text-2xl font-bold">{{ $totalTeams }}</div><div class="text-gray-600">Teams</div></div>
-        <div class="bg-gray-50 rounded-lg p-6"><div class="text-3xl mb-2">📅</div><div class="text-2xl font-bold">{{ $totalMatches }}</div><div class="text-gray-600">Matches</div></div>
-    </div>
-
-    <div class="grid md:grid-cols-2 gap-6">
-        <!-- Top Scorers -->
-        <div class="bg-white rounded-lg shadow-sm p-6">
-            <h2 class="text-xl font-bold mb-4">🥇 Top Scorers</h2>
-            @forelse($topScorers as $i => $player)
-            <div class="flex justify-between items-center bg-gray-50 rounded-lg px-4 py-3 mb-2">
-                <div class="flex items-center space-x-3">
-                    <span class="text-lg font-bold text-gray-400">#{{ $i + 1 }}</span>
+    <div class="bg-white rounded-lg shadow-lg p-6">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">System Reports</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-6 text-white">
+                <div class="flex justify-between items-center">
                     <div>
-                        <div class="font-semibold">{{ $player->name }}</div>
-                        <div class="text-sm text-gray-500">{{ $player->position }}</div>
+                        <p class="text-blue-100 text-sm">Total Users</p>
+                        <p class="text-3xl font-bold">{{ $totalUsers }}</p>
                     </div>
-                </div>
-                <div class="text-right">
-                    <div class="font-bold text-green-600">{{ $player->goals }} goals</div>
-                    <div class="text-xs text-gray-400">{{ $player->assists }} assists</div>
+                    <i class="fas fa-users text-4xl opacity-50"></i>
                 </div>
             </div>
-            @empty
-            <p class="text-gray-400 text-sm text-center py-4">No player data yet.</p>
-            @endforelse
-        </div>
-
-        <!-- Recent Matches -->
-        <div class="bg-white rounded-lg shadow-sm p-6">
-            <h2 class="text-xl font-bold mb-4">📅 Recent Matches</h2>
-            @forelse($recentMatches as $match)
-            <div class="flex justify-between items-center bg-gray-50 rounded-lg px-4 py-3 mb-2">
-                <div>
-                    <div class="font-semibold">{{ $match->home_team }} vs {{ $match->away_team }}</div>
-                    <div class="text-sm text-gray-500">{{ \Carbon\Carbon::parse($match->match_date)->format('M d, Y') }}</div>
-                </div>
-                <div class="text-right">
-                    @if($match->status === 'completed')
-                        <div class="font-bold">{{ $match->home_score }} - {{ $match->away_score }}</div>
-                    @endif
-                    <span class="text-xs px-2 py-1 rounded-full
-                        {{ $match->status === 'completed' ? 'bg-gray-100 text-gray-600' : 'bg-blue-100 text-blue-600' }}">
-                        {{ ucfirst($match->status) }}
-                    </span>
-                </div>
-            </div>
-            @empty
-            <p class="text-gray-400 text-sm text-center py-4">No matches yet.</p>
-            @endforelse
-        </div>
-
-        <!-- Health Summary -->
-        <div class="bg-white rounded-lg shadow-sm p-6 md:col-span-2">
-            <h2 class="text-xl font-bold mb-4">🏥 Health Summary</h2>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                @foreach(['fit' => ['green','✅'], 'injured' => ['red','🤕'], 'observation' => ['yellow','⚠️'], 'recovering' => ['blue','🔄']] as $status => [$color, $icon])
-                <div class="bg-{{ $color }}-50 border border-{{ $color }}-200 rounded-lg p-4 text-center">
-                    <div class="text-2xl mb-1">{{ $icon }}</div>
-                    <div class="text-xl font-bold text-{{ $color }}-600">
-                        {{ \App\Models\HealthRecord::where('status', $status)->count() }}
+            
+            <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-6 text-white">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="text-green-100 text-sm">Total Players</p>
+                        <p class="text-3xl font-bold">{{ $totalPlayers }}</p>
                     </div>
-                    <div class="text-sm text-gray-500">{{ ucfirst($status) }}</div>
+                    <i class="fas fa-futbol text-4xl opacity-50"></i>
                 </div>
-                @endforeach
             </div>
+            
+            <div class="bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-lg p-6 text-white">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="text-yellow-100 text-sm">Total Goals</p>
+                        <p class="text-3xl font-bold">{{ $totalGoals }}</p>
+                    </div>
+                    <i class="fas fa-bullseye text-4xl opacity-50"></i>
+                </div>
+            </div>
+            
+            <div class="bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg p-6 text-white">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="text-purple-100 text-sm">Training Sessions</p>
+                        <p class="text-3xl font-bold">{{ $totalTrainings }}</p>
+                    </div>
+                    <i class="fas fa-calendar-alt text-4xl opacity-50"></i>
+                </div>
+            </div>
+            
+            <div class="bg-gradient-to-r from-red-500 to-red-600 rounded-lg p-6 text-white">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="text-red-100 text-sm">Total Teams</p>
+                        <p class="text-3xl font-bold">{{ $totalTeams }}</p>
+                    </div>
+                    <i class="fas fa-building text-4xl opacity-50"></i>
+                </div>
+            </div>
+            
+            <div class="bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-lg p-6 text-white">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="text-indigo-100 text-sm">Total Matches</p>
+                        <p class="text-3xl font-bold">{{ $totalMatches }}</p>
+                    </div>
+                    <i class="fas fa-trophy text-4xl opacity-50"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-6 pt-6 border-t">
+            <button onclick="window.print()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
+                <i class="fas fa-print mr-2"></i>Print Report
+            </button>
         </div>
     </div>
 </div>

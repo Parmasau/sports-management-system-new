@@ -56,9 +56,9 @@
                     <p class="text-xs text-gray-300">Administrator</p>
                 </div>
             </div>
-            <a href="{{ route('profile.edit') }}" class="sidebar-item flex items-center space-x-3 px-4 py-2 rounded-lg mb-2">
-                <i class="fas fa-user-circle w-5"></i><span>My Profile</span>
-            </a>
+            <a href="{{ route('my-profile') }}" class="sidebar-item flex items-center space-x-3 px-4 py-2 rounded-lg mb-2">
+    <i class="fas fa-user-circle w-5"></i><span>My Profile</span>
+</a>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button type="submit" class="sidebar-item flex items-center space-x-3 px-4 py-2 rounded-lg w-full text-left hover:bg-red-600/20">

@@ -69,11 +69,7 @@
         <div class="absolute inset-0 bg-gradient-to-r from-gray-950 via-gray-950/85 to-gray-950/40"></div>
         <div class="relative z-10 max-w-7xl mx-auto px-6 py-32">
             <div class="max-w-2xl">
-                <div class="inline-flex items-center space-x-2 bg-purple-500/20 border border-purple-500/30 rounded-full px-4 py-1.5 mb-6 fade-up delay-1">
-                    <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-                    <span class="text-sm text-purple-300 font-medium">Now Live — Season 2024/25</span>
-                </div>
-                <h1 class="text-5xl md:text-6xl font-extrabold leading-tight mb-6 fade-up delay-2">
+                                <h1 class="text-5xl md:text-6xl font-extrabold leading-tight mb-6 fade-up delay-2">
                     The Ultimate<br>
                     <span class="bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text text-transparent">Sports Management</span><br>
                     Platform

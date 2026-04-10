@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Player;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -42,6 +43,23 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
             'role' => $request->role,
         ]);
+
+        // Create player record if role is player
+        if ($request->role === 'player') {
+            Player::create([
+                'user_id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'position' => 'Not Assigned',
+                'jersey_number' => 0,
+                'goals' => 0,
+                'assists' => 0,
+                'matches' => 0,
+                'rating' => 0,
+                'status' => 'active',
+                'image' => null
+            ]);
+        }
 
         event(new Registered($user));
 

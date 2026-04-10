@@ -81,9 +81,6 @@ class CoachController extends Controller
 
    public function storePlayer(Request $request)
 {
-    // Log the incoming request for debugging
-    \Log::info('Store player request:', $request->all());
-    
     $request->validate([
         'name' => 'required|string|max:255',
         'email' => 'required|email|unique:players',
@@ -98,29 +95,25 @@ class CoachController extends Controller
         $imagePath = $request->file('image')->store('players', 'public');
     }
 
-    try {
-        $player = Player::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'image' => $imagePath,
-            'position' => $request->position,
-            'jersey_number' => $request->jersey_number,
-            'team_id' => $request->team_id,
-            'status' => 'active',
-            'goals' => 0,
-            'assists' => 0,
-            'matches' => 0,
-            'rating' => 0
-        ]);
-        
-        \Log::info('Player created successfully:', ['id' => $player->id]);
-        
-        return redirect()->route('coach.players')->with('success', 'Player added successfully!');
-        
-    } catch (\Exception $e) {
-        \Log::error('Error creating player: ' . $e->getMessage());
-        return redirect()->back()->with('error', 'Failed to add player: ' . $e->getMessage());
-    }
+    // Check if user exists with this email
+    $user = \App\Models\User::where('email', $request->email)->first();
+    
+    Player::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'user_id' => $user ? $user->id : null,
+        'image' => $imagePath,
+        'position' => $request->position,
+        'jersey_number' => $request->jersey_number,
+        'team_id' => $request->team_id,
+        'status' => 'active',
+        'goals' => 0,
+        'assists' => 0,
+        'matches' => 0,
+        'rating' => 0
+    ]);
+
+    return redirect()->route('coach.players')->with('success', 'Player added successfully!');
 }
     public function editPlayer($id)
     {

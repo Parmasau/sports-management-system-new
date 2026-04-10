@@ -1,0 +1,59 @@
+[90m= [39m[
+    {#7448
+      +"[1mTables_in_sports_management[22m": [32m"[39m[32machievements[39m[32m"[39m,
+    },
+    {#7446
+      +"[1mTables_in_sports_management[22m": [32m"[39m[32mcache[39m[32m"[39m,
+    },
+    {#7445
+      +"[1mTables_in_sports_management[22m": [32m"[39m[32mcache_locks[39m[32m"[39m,
+    },
+    {#7444
+      +"[1mTables_in_sports_management[22m": [32m"[39m[32mfailed_jobs[39m[32m"[39m,
+    },
+    {#7443
+      +"[1mTables_in_sports_management[22m": [32m"[39m[32mhealth_records[39m[32m"[39m,
+    },
+    {#7450
+      +"[1mTables_in_sports_management[22m": [32m"[39m[32mjob_batches[39m[32m"[39m,
+    },
+    {#7427
+      +"[1mTables_in_sports_management[22m": [32m"[39m[32mjobs[39m[32m"[39m,
+    },
+    {#7451
+      +"[1mTables_in_sports_management[22m": [32m"[39m[32mlineups[39m[32m"[39m,
+    },
+    {#7452
+      +"[1mTables_in_sports_management[22m": [32m"[39m[32mmatches[39m[32m"[39m,
+    },
+    {#7453
+      +"[1mTables_in_sports_management[22m": [32m"[39m[32mmigrations[39m[32m"[39m,
+    },
+    {#7454
+      +"[1mTables_in_sports_management[22m": [32m"[39m[32mpassword_reset_tokens[39m[32m"[39m,
+    },
+    {#7455
+      +"[1mTables_in_sports_management[22m": [32m"[39m[32mplayer_achievements[39m[32m"[39m,
+    },
+    {#7456
+      +"[1mTables_in_sports_management[22m": [32m"[39m[32mplayer_match_stats[39m[32m"[39m,
+    },
+    {#7457
+      +"[1mTables_in_sports_management[22m": [32m"[39m[32mplayers[39m[32m"[39m,
+    },
+    {#7458
+      +"[1mTables_in_sports_management[22m": [32m"[39m[32msessions[39m[32m"[39m,
+    },
+    {#7459
+      +"[1mTables_in_sports_management[22m": [32m"[39m[32mtactics[39m[32m"[39m,
+    },
+    {#7460
+      +"[1mTables_in_sports_management[22m": [32m"[39m[32mteams[39m[32m"[39m,
+    },
+    {#7461
+      +"[1mTables_in_sports_management[22m": [32m"[39m[32mtraining_sessions[39m[32m"[39m,
+    },
+    {#7462
+      +"[1mTables_in_sports_management[22m": [32m"[39m[32musers[39m[32m"[39m,
+    },
+  ]
