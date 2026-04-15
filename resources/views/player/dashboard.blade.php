@@ -47,6 +47,32 @@
         </div>
     </div>
 
+    <!-- Upcoming Matches Section -->
+    @if(isset($upcomingMatches) && $upcomingMatches->count() > 0)
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+        <h2 class="text-xl font-bold mb-4 flex items-center">
+            <i class="fas fa-calendar-alt text-green-600 mr-2"></i> Upcoming Matches
+        </h2>
+        <div class="space-y-3">
+            @foreach($upcomingMatches as $match)
+            <div class="border-l-4 border-green-500 bg-green-50 rounded-lg p-3">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="font-bold">vs {{ $match->opponent }}</p>
+                        <p class="text-sm text-gray-600">
+                            <i class="fas fa-calendar mr-1"></i>{{ \Carbon\Carbon::parse($match->match_date)->format('M d, Y') }}
+                            <i class="fas fa-clock ml-2 mr-1"></i>{{ \Carbon\Carbon::parse($match->match_time)->format('g:i A') }}
+                        </p>
+                        <p class="text-xs text-gray-500"><i class="fas fa-location-dot mr-1"></i>{{ $match->location }} ({{ ucfirst($match->type) }})</p>
+                    </div>
+                    <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-xs">Upcoming</span>
+                </div>
+            </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
+
     <!-- Team Formation Field (Only show if profile is complete) -->
     @if($isProfileComplete && $activeTactic)
     <div class="bg-white rounded-lg shadow-lg p-6 mb-6">

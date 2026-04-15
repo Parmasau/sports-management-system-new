@@ -10,7 +10,7 @@ class MatchModel extends Model
     use HasFactory;
 
     protected $table = 'matches';
-    
+
     protected $fillable = [
         'opponent',
         'match_date',
@@ -21,12 +21,13 @@ class MatchModel extends Model
         'opponent_score',
         'result',
         'team_id',
-        'notes',
-        'status'
+        'status',
+        'notes'
     ];
 
     protected $casts = [
         'match_date' => 'date',
+        'match_time' => 'datetime',
     ];
 
     public function team()

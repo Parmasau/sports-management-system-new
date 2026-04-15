@@ -13,6 +13,7 @@ return new class extends Migration
             $table->foreignId('player_id')->constrained('players')->onDelete('cascade');
             $table->foreignId('achievement_id')->constrained('achievements')->onDelete('cascade');
             $table->date('earned_date');
+            $table->text('notes')->nullable();
             $table->timestamps();
         });
     }

@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 use App\Models\Player;
 use App\Models\Tactic;
 use App\Models\Team;
 use App\Models\MatchModel;
 use App\Models\PlayerMatchStat;
 use App\Models\Achievement;
+use App\Models\HealthRecord;
 
 class PlayerController extends Controller
 {
@@ -34,7 +36,12 @@ class PlayerController extends Controller
         }
         
         $isProfileComplete = $player->position !== 'Not Assigned' && $player->jersey_number > 0;
-        $activeTactic = Tactic::where('is_active', true)->first();
+        
+        // Get active tactic from database with null check for table existence
+        $activeTactic = null;
+        if (Schema::hasTable('tactics')) {
+            $activeTactic = Tactic::where('is_active', true)->first();
+        }
         
         $teammates = collect();
         $team = null;
@@ -106,7 +113,7 @@ class PlayerController extends Controller
         $upcomingMatches = collect();
         $pastMatches = collect();
         
-        if ($player->team_id) {
+        if ($player->team_id && Schema::hasTable('matches')) {
             $upcomingMatches = MatchModel::where('team_id', $player->team_id)
                 ->where('match_date', '>=', now())
                 ->where('status', 'scheduled')
@@ -114,20 +121,24 @@ class PlayerController extends Controller
                 ->get();
                 
             $pastMatches = MatchModel::where('team_id', $player->team_id)
-                ->where('match_date', '<', now())
-                ->orWhere('status', 'completed')
+                ->where(function($query) {
+                    $query->where('match_date', '<', now())
+                          ->orWhere('status', 'completed');
+                })
                 ->orderBy('match_date', 'desc')
                 ->take(5)
                 ->get();
         }
         
-        foreach($pastMatches as $match) {
-            $playerStat = PlayerMatchStat::where('player_id', $player->id)
-                ->where('match_id', $match->id)
-                ->first();
-            $match->player_goals = $playerStat ? $playerStat->goals : 0;
-            $match->player_assists = $playerStat ? $playerStat->assists : 0;
-            $match->player_rating = $playerStat ? $playerStat->rating : 0;
+        if (Schema::hasTable('player_match_stats')) {
+            foreach($pastMatches as $match) {
+                $playerStat = PlayerMatchStat::where('player_id', $player->id)
+                    ->where('match_id', $match->id)
+                    ->first();
+                $match->player_goals = $playerStat ? $playerStat->goals : 0;
+                $match->player_assists = $playerStat ? $playerStat->assists : 0;
+                $match->player_rating = $playerStat ? $playerStat->rating : 0;
+            }
         }
         
         return view('player.matches', compact('player', 'upcomingMatches', 'pastMatches'));
@@ -211,16 +222,20 @@ class PlayerController extends Controller
             ]);
         }
         
-        $earnedAchievements = $player->achievements()->orderBy('earned_date', 'desc')->get();
-        $allAchievements = Achievement::all();
-        $earnedIds = $earnedAchievements->pluck('id')->toArray();
-        $availableAchievements = Achievement::whereNotIn('id', $earnedIds)->get();
-        
+        $earnedAchievements = collect();
+        $availableAchievements = collect();
         $progress = [
             'goal_milestones' => $this->calculateGoalMilestones($player->goals),
             'match_milestones' => $this->calculateMatchMilestones($player->matches),
             'rating_milestones' => $this->calculateRatingMilestones($player->rating),
         ];
+        
+        if (Schema::hasTable('achievements')) {
+            $earnedAchievements = $player->achievements()->orderBy('earned_date', 'desc')->get();
+            $allAchievements = Achievement::all();
+            $earnedIds = $earnedAchievements->pluck('id')->toArray();
+            $availableAchievements = Achievement::whereNotIn('id', $earnedIds)->get();
+        }
         
         return view('player.achievements', compact('player', 'earnedAchievements', 'availableAchievements', 'progress'));
     }
@@ -241,6 +256,24 @@ class PlayerController extends Controller
         return view('player.profile', compact('player'));
     }
 
+   public function health()
+{
+    $player = Player::where('user_id', Auth::id())->first();
+    
+    if (!$player) {
+        return redirect()->route('player.dashboard')->with('error', 'Player profile not found');
+    }
+    
+    $healthRecords = HealthRecord::where('player_id', $player->id)
+        ->orderBy('record_date', 'desc')
+        ->paginate(10);
+    
+    $latestHealth = HealthRecord::where('player_id', $player->id)
+        ->orderBy('record_date', 'desc')
+        ->first();
+    
+    return view('player.health', compact('player', 'healthRecords', 'latestHealth'));
+}
     private function calculateGoalMilestones($goals)
     {
         $milestones = [5, 10, 25, 50, 100];

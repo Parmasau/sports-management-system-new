@@ -14,13 +14,18 @@ class Achievement extends Model
         'description',
         'icon',
         'type',
-        'points'
+        'points',
+        'badge_color'
+    ];
+
+    protected $casts = [
+        'points' => 'integer'
     ];
 
     public function players()
     {
         return $this->belongsToMany(Player::class, 'player_achievements')
-                    ->withPivot('earned_date')
+                    ->withPivot('earned_date', 'notes')
                     ->withTimestamps();
     }
 }

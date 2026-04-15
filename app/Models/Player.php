@@ -56,10 +56,25 @@ class Player extends Model
     }
 
     public function achievements()
+{
+    return $this->belongsToMany(Achievement::class, 'player_achievements')
+                ->withPivot('earned_date', 'notes')
+                ->withTimestamps();
+}
+
+public function earnedAchievements()
+{
+    return $this->achievements()->orderBy('earned_date', 'desc');
+}
+    
+    public function healthRecords()
     {
-        return $this->belongsToMany(Achievement::class, 'player_achievements')
-                    ->withPivot('earned_date')
-                    ->withTimestamps();
+        return $this->hasMany(HealthRecord::class)->orderBy('record_date', 'desc');
+    }
+    
+    public function latestHealthRecord()
+    {
+        return $this->hasOne(HealthRecord::class)->latest('record_date');
     }
     
     public function getImageUrlAttribute()

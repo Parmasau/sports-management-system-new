@@ -41,6 +41,10 @@
                 <a href="{{ route('player.achievements') }}" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-lg {{ request()->routeIs('player.achievements') ? 'active' : '' }}">
                     <i class="fas fa-trophy w-5"></i><span>Achievements</span>
                 </a>
+                <!-- Add this link in the navigation section -->
+<a href="{{ route('player.health') }}" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-lg {{ request()->routeIs('player.health') ? 'active' : '' }}">
+    <i class="fas fa-heartbeat w-5"></i><span>Health Tracking</span>
+</a>
             </nav>
         </div>
         

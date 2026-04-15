@@ -14,10 +14,21 @@ class PlayerAchievement extends Model
     protected $fillable = [
         'player_id',
         'achievement_id',
-        'earned_date'
+        'earned_date',
+        'notes'
     ];
 
     protected $casts = [
         'earned_date' => 'date'
     ];
+
+    public function player()
+    {
+        return $this->belongsTo(Player::class);
+    }
+
+    public function achievement()
+    {
+        return $this->belongsTo(Achievement::class);
+    }
 }

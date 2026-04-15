@@ -13,8 +13,9 @@ return new class extends Migration
             $table->string('title');
             $table->text('description');
             $table->string('icon');
-            $table->enum('type', ['individual', 'team', 'season']);
+            $table->enum('type', ['individual', 'team', 'season'])->default('individual');
             $table->integer('points')->default(0);
+            $table->string('badge_color')->default('gold');
             $table->timestamps();
         });
     }

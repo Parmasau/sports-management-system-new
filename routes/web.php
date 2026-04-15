@@ -37,6 +37,7 @@ Route::middleware(['auth'])->prefix('player')->name('player.')->group(function (
     Route::get('/team', [PlayerController::class, 'team'])->name('team');
     Route::get('/achievements', [PlayerController::class, 'achievements'])->name('achievements');
     Route::get('/profile', [PlayerController::class, 'profile'])->name('profile');
+    Route::get('/health', [PlayerController::class, 'health'])->name('health');
 });
 
 // Coach Routes
@@ -65,13 +66,47 @@ Route::middleware(['auth'])->prefix('coach')->name('coach.')->group(function () 
     Route::delete('/training/{id}', [CoachController::class, 'destroyTraining'])->name('training.destroy');
     
     // Tactics Management
-    Route::get('/tactics/{id}/show', [CoachController::class, 'showTactic'])->name('tactics.show');
     Route::get('/tactics', [CoachController::class, 'tactics'])->name('tactics');
     Route::get('/tactics/create', [CoachController::class, 'createTactic'])->name('tactics.create');
     Route::post('/tactics', [CoachController::class, 'storeTactic'])->name('tactics.store');
     Route::get('/tactics/{id}/edit', [CoachController::class, 'editTactic'])->name('tactics.edit');
     Route::put('/tactics/{id}', [CoachController::class, 'updateTactic'])->name('tactics.update');
     Route::delete('/tactics/{id}', [CoachController::class, 'destroyTactic'])->name('tactics.destroy');
+    Route::get('/tactics/{id}/show', [CoachController::class, 'showTactic'])->name('tactics.show');
+    
+    // Health Management
+    Route::get('/health', [CoachController::class, 'healthOverview'])->name('health.overview');
+    Route::get('/players/{id}/health', [CoachController::class, 'playerHealth'])->name('players.health');
+    Route::post('/players/{id}/health', [CoachController::class, 'storeHealth'])->name('players.health.store');
+    Route::get('/players/{playerId}/health/{healthId}/edit', [CoachController::class, 'editHealth'])->name('players.health.edit');
+    Route::put('/players/{playerId}/health/{healthId}', [CoachController::class, 'updateHealth'])->name('players.health.update');
+    Route::delete('/players/{playerId}/health/{healthId}', [CoachController::class, 'destroyHealth'])->name('players.health.destroy');
+    
+    // Achievement Management
+    Route::get('/achievements', [CoachController::class, 'achievements'])->name('achievements');
+    Route::get('/achievements/create', [CoachController::class, 'createAchievement'])->name('achievements.create');
+    Route::post('/achievements', [CoachController::class, 'storeAchievement'])->name('achievements.store');
+    Route::get('/achievements/{id}/edit', [CoachController::class, 'editAchievement'])->name('achievements.edit');
+    Route::put('/achievements/{id}', [CoachController::class, 'updateAchievement'])->name('achievements.update');
+    Route::delete('/achievements/{id}', [CoachController::class, 'destroyAchievement'])->name('achievements.destroy');
+    
+    // Match Management
+Route::get('/matches', [CoachController::class, 'matches'])->name('matches');
+Route::get('/matches/create', [CoachController::class, 'createMatch'])->name('matches.create');
+Route::post('/matches', [CoachController::class, 'storeMatch'])->name('matches.store');
+Route::get('/matches/{id}/edit', [CoachController::class, 'editMatch'])->name('matches.edit');
+Route::put('/matches/{id}', [CoachController::class, 'updateMatch'])->name('matches.update');
+Route::delete('/matches/{id}', [CoachController::class, 'destroyMatch'])->name('matches.destroy');
+
+// Player Match Stats
+Route::get('/matches/{id}/stats', [CoachController::class, 'matchStats'])->name('matches.stats');
+Route::post('/matches/{id}/stats', [CoachController::class, 'storeMatchStats'])->name('matches.stats.store');
+Route::put('/matches/{matchId}/stats/{playerId}', [CoachController::class, 'updateMatchStats'])->name('matches.stats.update');
+    // Assign Achievements to Players
+    Route::get('/players/{id}/achievements', [CoachController::class, 'playerAchievements'])->name('players.achievements');
+    Route::post('/players/{id}/achievements', [CoachController::class, 'assignAchievement'])->name('players.achievements.assign');
+    Route::put('/players/{playerId}/achievements/{achievementId}/update', [CoachController::class, 'updatePlayerAchievement'])->name('players.achievements.update');
+    Route::delete('/players/{playerId}/achievements/{achievementId}', [CoachController::class, 'removeAchievement'])->name('players.achievements.remove');
 });
 
 // Admin Routes
@@ -87,16 +122,23 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::delete('/matches/{id}', [AdminController::class, 'destroyMatch'])->name('matches.destroy');
     Route::get('/reports', [AdminController::class, 'reports'])->name('reports');
     Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
+    Route::get('/players', [AdminController::class, 'players'])->name('players');
+    Route::get('/players/create', [AdminController::class, 'createPlayer'])->name('players.create');
+    Route::post('/players', [AdminController::class, 'storePlayer'])->name('players.store');
+    Route::get('/players/{id}/edit', [AdminController::class, 'editPlayer'])->name('players.edit');
+    Route::put('/players/{id}', [AdminController::class, 'updatePlayer'])->name('players.update');
+    Route::delete('/players/{id}', [AdminController::class, 'destroyPlayer'])->name('players.destroy');
+    Route::get('/players/{id}/health', [AdminController::class, 'playerHealth'])->name('players.health');
 });
 
-// Profile Routes (Fixed)
+// Profile Routes
 Route::middleware(['auth'])->prefix('profile')->name('profile.')->group(function () {
     Route::get('/', [ProfileController::class, 'edit'])->name('edit');
     Route::patch('/', [ProfileController::class, 'update'])->name('update');
     Route::delete('/', [ProfileController::class, 'destroy'])->name('destroy');
 });
 
-// Simple profile route for all users (alternative)
+// Simple profile route for all users
 Route::middleware(['auth'])->get('/my-profile', function () {
     return view('profile.simple', ['user' => Auth::user()]);
 })->name('my-profile');

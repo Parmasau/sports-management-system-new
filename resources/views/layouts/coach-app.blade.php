@@ -56,6 +56,56 @@
         ::-webkit-scrollbar-thumb:hover {
             background: rgba(255,215,0,0.8);
         }
+        
+        /* Profile dropdown styles */
+        .profile-dropdown {
+            position: relative;
+            cursor: pointer;
+        }
+        .profile-dropdown-menu {
+            position: absolute;
+            bottom: 100%;
+            left: 0;
+            background: rgba(15, 32, 39, 0.98);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            width: 220px;
+            margin-bottom: 10px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            z-index: 50;
+        }
+        .profile-dropdown:hover .profile-dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .profile-dropdown-menu-item {
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.2s;
+            border-radius: 8px;
+            margin: 4px 8px;
+            color: #fff;
+        }
+        .profile-dropdown-menu-item:hover {
+            background: rgba(255, 215, 0, 0.2);
+        }
+        .profile-dropdown-menu-item i {
+            width: 20px;
+            color: #ffd700;
+        }
+        .profile-dropdown-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 8px;
+        }
     </style>
 </head>
 <body class="flex">
@@ -77,6 +127,9 @@
                 <a href="{{ route('coach.players') }}" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-lg {{ request()->routeIs('coach.players*') ? 'active' : '' }}">
                     <i class="fas fa-users w-5"></i><span>Manage Players</span>
                 </a>
+                <a href="{{ route('coach.matches') }}" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-lg {{ request()->routeIs('coach.matches*') ? 'active' : '' }}">
+                    <i class="fas fa-calendar-alt w-5"></i><span>Matches</span>
+                </a>
                 <a href="{{ route('coach.training') }}" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-lg {{ request()->routeIs('coach.training*') ? 'active' : '' }}">
                     <i class="fas fa-calendar-alt w-5"></i><span>Training</span>
                 </a>
@@ -86,27 +139,51 @@
                 <a href="{{ route('coach.tactics') }}" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-lg {{ request()->routeIs('coach.tactics*') ? 'active' : '' }}">
                     <i class="fas fa-futbol w-5"></i><span>Tactics</span>
                 </a>
+                <a href="{{ route('coach.achievements') }}" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-lg {{ request()->routeIs('coach.achievements*') ? 'active' : '' }}">
+                    <i class="fas fa-trophy w-5"></i><span>Achievements</span>
+                </a>
+                <a href="{{ route('coach.health.overview') }}" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-lg {{ request()->routeIs('coach.health*') ? 'active' : '' }}">
+                    <i class="fas fa-heartbeat w-5"></i><span>Health Tracking</span>
+                </a>
             </nav>
         </div>
         
-        <!-- Profile and Logout at Bottom -->
+        <!-- Profile Dropdown with Logout -->
         <div class="mt-auto p-6 border-t border-white/20">
-            <div class="flex items-center space-x-3 mb-4">
-                <img src="https://ui-avatars.com/api/?name={{ Auth::user()->name }}&background=ffd700&color=1e3c72&rounded=true&size=40" class="w-10 h-10 rounded-full">
-                <div class="flex-1">
-                    <p class="font-semibold text-sm">{{ Auth::user()->name }}</p>
-                    <p class="text-xs text-gray-300">Coach</p>
+            <div class="profile-dropdown">
+                <div class="flex items-center space-x-3 cursor-pointer group">
+                    <img src="https://ui-avatars.com/api/?name={{ Auth::user()->name }}&background=ffd700&color=1e3c72&rounded=true&size=40" class="w-10 h-10 rounded-full border-2 border-yellow-400 group-hover:scale-105 transition">
+                    <div class="flex-1">
+                        <p class="font-semibold text-sm">{{ Auth::user()->name }}</p>
+                        <p class="text-xs text-gray-300">Coach</p>
+                    </div>
+                    <i class="fas fa-chevron-up text-xs text-gray-400 transition-transform group-hover:rotate-180"></i>
+                </div>
+                
+                <!-- Dropdown Menu -->
+                <div class="profile-dropdown-menu">
+                    <a href="{{ route('my-profile') }}" class="profile-dropdown-menu-item">
+                        <i class="fas fa-user-circle"></i>
+                        <span>My Profile</span>
+                    </a>
+                    <a href="{{ route('coach.dashboard') }}" class="profile-dropdown-menu-item">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="{{ route('coach.players') }}" class="profile-dropdown-menu-item">
+                        <i class="fas fa-users"></i>
+                        <span>Manage Players</span>
+                    </a>
+                    <div class="profile-dropdown-divider"></div>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="profile-dropdown-menu-item w-full">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </button>
+                    </form>
                 </div>
             </div>
-            <a href="{{ route('my-profile') }}" class="sidebar-item flex items-center space-x-3 px-4 py-2 rounded-lg mb-2">
-    <i class="fas fa-user-circle w-5"></i><span>My Profile</span>
-</a>
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit" class="sidebar-item flex items-center space-x-3 px-4 py-2 rounded-lg w-full text-left hover:bg-red-600/20">
-                    <i class="fas fa-sign-out-alt w-5"></i><span>Logout</span>
-                </button>
-            </form>
         </div>
     </div>
 
