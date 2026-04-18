@@ -68,7 +68,14 @@
                     <div class="flex-1">
                         <h3 class="font-bold text-lg text-gray-800">{{ $achievement->title }}</h3>
                         <p class="text-sm text-gray-600">{{ $achievement->description }}</p>
-                        <p class="text-xs text-yellow-600 mt-1">Earned: {{ $achievement->pivot->earned_date->format('F j, Y') }}</p>
+                        <p class="text-xs text-yellow-600 mt-1">
+                            Earned: 
+                            @if($achievement->pivot && $achievement->pivot->earned_date)
+                                {{ \Carbon\Carbon::parse($achievement->pivot->earned_date)->format('F j, Y') }}
+                            @else
+                                {{ date('F j, Y') }}
+                            @endif
+                        </p>
                     </div>
                     <div class="text-2xl">🏆</div>
                 </div>

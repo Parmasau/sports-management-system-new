@@ -109,35 +109,45 @@ Route::put('/matches/{matchId}/stats/{playerId}', [CoachController::class, 'upda
     Route::delete('/players/{playerId}/achievements/{achievementId}', [CoachController::class, 'removeAchievement'])->name('players.achievements.remove');
 });
 
-// Admin Routes
+//// Admin Routes
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/users', [AdminController::class, 'users'])->name('users');
+    Route::put('/users/{id}/role', [AdminController::class, 'updateRole'])->name('users.updateRole');
     Route::delete('/users/{id}', [AdminController::class, 'destroyUser'])->name('users.destroy');
+    
+    // Teams Management
     Route::get('/teams', [AdminController::class, 'teams'])->name('teams');
     Route::post('/teams', [AdminController::class, 'storeTeam'])->name('teams.store');
+    Route::get('/teams/{id}/edit', [AdminController::class, 'editTeam'])->name('teams.edit');
+    Route::put('/teams/{id}', [AdminController::class, 'updateTeam'])->name('teams.update');
     Route::delete('/teams/{id}', [AdminController::class, 'destroyTeam'])->name('teams.destroy');
+    
+    // Matches Management
     Route::get('/matches', [AdminController::class, 'matches'])->name('matches');
     Route::post('/matches', [AdminController::class, 'storeMatch'])->name('matches.store');
+    Route::get('/matches/{id}/edit', [AdminController::class, 'editMatch'])->name('matches.edit');
+    Route::put('/matches/{id}', [AdminController::class, 'updateMatch'])->name('matches.update');
     Route::delete('/matches/{id}', [AdminController::class, 'destroyMatch'])->name('matches.destroy');
-    Route::get('/reports', [AdminController::class, 'reports'])->name('reports');
-    Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
+    
+    // Player Management
     Route::get('/players', [AdminController::class, 'players'])->name('players');
     Route::get('/players/create', [AdminController::class, 'createPlayer'])->name('players.create');
     Route::post('/players', [AdminController::class, 'storePlayer'])->name('players.store');
     Route::get('/players/{id}/edit', [AdminController::class, 'editPlayer'])->name('players.edit');
     Route::put('/players/{id}', [AdminController::class, 'updatePlayer'])->name('players.update');
     Route::delete('/players/{id}', [AdminController::class, 'destroyPlayer'])->name('players.destroy');
+    
+    // Player Health Management
     Route::get('/players/{id}/health', [AdminController::class, 'playerHealth'])->name('players.health');
+    Route::get('/players/{playerId}/health/{healthId}/edit', [AdminController::class, 'editPlayerHealth'])->name('players.health.edit');
+    Route::put('/players/{playerId}/health/{healthId}', [AdminController::class, 'updatePlayerHealth'])->name('players.health.update');
+    Route::delete('/players/{playerId}/health/{healthId}', [AdminController::class, 'deletePlayerHealth'])->name('players.health.delete');
+    
+    // Reports and Settings
+    Route::get('/reports', [AdminController::class, 'reports'])->name('reports');
+    Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
 });
-
-// Profile Routes
-Route::middleware(['auth'])->prefix('profile')->name('profile.')->group(function () {
-    Route::get('/', [ProfileController::class, 'edit'])->name('edit');
-    Route::patch('/', [ProfileController::class, 'update'])->name('update');
-    Route::delete('/', [ProfileController::class, 'destroy'])->name('destroy');
-});
-
 // Simple profile route for all users
 Route::middleware(['auth'])->get('/my-profile', function () {
     return view('profile.simple', ['user' => Auth::user()]);

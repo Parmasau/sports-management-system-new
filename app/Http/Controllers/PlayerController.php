@@ -203,43 +203,51 @@ class PlayerController extends Controller
     }
 
     public function achievements()
-    {
-        $player = Player::where('user_id', Auth::id())->first();
-        
-        if (!$player) {
-            $player = Player::create([
-                'user_id' => Auth::id(),
-                'name' => Auth::user()->name,
-                'email' => Auth::user()->email,
-                'position' => 'Not Assigned',
-                'jersey_number' => 0,
-                'goals' => 0,
-                'assists' => 0,
-                'matches' => 0,
-                'rating' => 0,
-                'status' => 'active',
-                'image' => null
-            ]);
-        }
-        
-        $earnedAchievements = collect();
-        $availableAchievements = collect();
-        $progress = [
-            'goal_milestones' => $this->calculateGoalMilestones($player->goals),
-            'match_milestones' => $this->calculateMatchMilestones($player->matches),
-            'rating_milestones' => $this->calculateRatingMilestones($player->rating),
-        ];
-        
-        if (Schema::hasTable('achievements')) {
-            $earnedAchievements = $player->achievements()->orderBy('earned_date', 'desc')->get();
-            $allAchievements = Achievement::all();
-            $earnedIds = $earnedAchievements->pluck('id')->toArray();
-            $availableAchievements = Achievement::whereNotIn('id', $earnedIds)->get();
-        }
-        
-        return view('player.achievements', compact('player', 'earnedAchievements', 'availableAchievements', 'progress'));
+{
+    $player = Player::where('user_id', Auth::id())->first();
+    
+    if (!$player) {
+        $player = Player::create([
+            'user_id' => Auth::id(),
+            'name' => Auth::user()->name,
+            'email' => Auth::user()->email,
+            'position' => 'Not Assigned',
+            'jersey_number' => 0,
+            'goals' => 0,
+            'assists' => 0,
+            'matches' => 0,
+            'rating' => 0,
+            'status' => 'active',
+            'image' => null
+        ]);
     }
-
+    
+    $earnedAchievements = collect();
+    $availableAchievements = collect();
+    $progress = [
+        'goal_milestones' => $this->calculateGoalMilestones($player->goals),
+        'match_milestones' => $this->calculateMatchMilestones($player->matches),
+        'rating_milestones' => $this->calculateRatingMilestones($player->rating),
+    ];
+    
+    if (Schema::hasTable('achievements')) {
+        // Get earned achievements with proper date parsing
+        $earnedAchievements = $player->achievements()->orderBy('earned_date', 'desc')->get();
+        
+        // Ensure earned_date is properly cast
+        foreach($earnedAchievements as $achievement) {
+            if ($achievement->pivot && is_string($achievement->pivot->earned_date)) {
+                $achievement->pivot->earned_date = \Carbon\Carbon::parse($achievement->pivot->earned_date);
+            }
+        }
+        
+        $allAchievements = Achievement::all();
+        $earnedIds = $earnedAchievements->pluck('id')->toArray();
+        $availableAchievements = Achievement::whereNotIn('id', $earnedIds)->get();
+    }
+    
+    return view('player.achievements', compact('player', 'earnedAchievements', 'availableAchievements', 'progress'));
+}
     public function profile()
     {
         $player = Player::where('user_id', Auth::id())->first();
