@@ -5,6 +5,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PlayerController;
 use App\Http\Controllers\CoachController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ChatController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -91,17 +92,18 @@ Route::middleware(['auth'])->prefix('coach')->name('coach.')->group(function () 
     Route::delete('/achievements/{id}', [CoachController::class, 'destroyAchievement'])->name('achievements.destroy');
     
     // Match Management
-Route::get('/matches', [CoachController::class, 'matches'])->name('matches');
-Route::get('/matches/create', [CoachController::class, 'createMatch'])->name('matches.create');
-Route::post('/matches', [CoachController::class, 'storeMatch'])->name('matches.store');
-Route::get('/matches/{id}/edit', [CoachController::class, 'editMatch'])->name('matches.edit');
-Route::put('/matches/{id}', [CoachController::class, 'updateMatch'])->name('matches.update');
-Route::delete('/matches/{id}', [CoachController::class, 'destroyMatch'])->name('matches.destroy');
+    Route::get('/matches', [CoachController::class, 'matches'])->name('matches');
+    Route::get('/matches/create', [CoachController::class, 'createMatch'])->name('matches.create');
+    Route::post('/matches', [CoachController::class, 'storeMatch'])->name('matches.store');
+    Route::get('/matches/{id}/edit', [CoachController::class, 'editMatch'])->name('matches.edit');
+    Route::put('/matches/{id}', [CoachController::class, 'updateMatch'])->name('matches.update');
+    Route::delete('/matches/{id}', [CoachController::class, 'destroyMatch'])->name('matches.destroy');
 
-// Player Match Stats
-Route::get('/matches/{id}/stats', [CoachController::class, 'matchStats'])->name('matches.stats');
-Route::post('/matches/{id}/stats', [CoachController::class, 'storeMatchStats'])->name('matches.stats.store');
-Route::put('/matches/{matchId}/stats/{playerId}', [CoachController::class, 'updateMatchStats'])->name('matches.stats.update');
+    // Player Match Stats
+    Route::get('/matches/{id}/stats', [CoachController::class, 'matchStats'])->name('matches.stats');
+    Route::post('/matches/{id}/stats', [CoachController::class, 'storeMatchStats'])->name('matches.stats.store');
+    Route::put('/matches/{matchId}/stats/{playerId}', [CoachController::class, 'updateMatchStats'])->name('matches.stats.update');
+    
     // Assign Achievements to Players
     Route::get('/players/{id}/achievements', [CoachController::class, 'playerAchievements'])->name('players.achievements');
     Route::post('/players/{id}/achievements', [CoachController::class, 'assignAchievement'])->name('players.achievements.assign');
@@ -109,7 +111,16 @@ Route::put('/matches/{matchId}/stats/{playerId}', [CoachController::class, 'upda
     Route::delete('/players/{playerId}/achievements/{achievementId}', [CoachController::class, 'removeAchievement'])->name('players.achievements.remove');
 });
 
-//// Admin Routes
+// Chat Routes
+Route::middleware(['auth'])->prefix('chat')->name('chat.')->group(function () {
+    Route::get('/', [ChatController::class, 'index'])->name('index');
+    Route::get('/conversation/{userId}', [ChatController::class, 'conversation'])->name('conversation');
+    Route::post('/send', [ChatController::class, 'sendMessage'])->name('send');
+    Route::get('/unread-count', [ChatController::class, 'getUnreadCount'])->name('unread-count');
+    Route::post('/mark-read/{messageId}', [ChatController::class, 'markAsRead'])->name('mark-read');
+});
+
+// Admin Routes
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/users', [AdminController::class, 'users'])->name('users');
@@ -148,6 +159,7 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::get('/reports', [AdminController::class, 'reports'])->name('reports');
     Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
 });
+
 // Simple profile route for all users
 Route::middleware(['auth'])->get('/my-profile', function () {
     return view('profile.simple', ['user' => Auth::user()]);

@@ -1,44 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Coach Dashboard') - Sports Management</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { 
-            background: url('https://images.unsplash.com/photo-1529900748604-07564a03e7a6?q=80&w=2070&auto=format&fit=crop') no-repeat center center fixed;
-            background-size: cover;
-            min-height: 100vh;
-        }
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.65);
-            z-index: -1;
-        }
-        .sidebar { 
-            background: linear-gradient(180deg, rgba(15, 32, 39, 0.95) 0%, rgba(32, 58, 67, 0.95) 100%);
-            backdrop-filter: blur(10px);
-        }
-        .sidebar-item { 
-            transition: all 0.3s; 
-            border-left: 3px solid transparent; 
-        }
-        .sidebar-item:hover, .sidebar-item.active { 
-            background: rgba(255,255,255,0.15); 
-            border-left-color: #ffd700; 
-            transform: translateX(5px); 
-        }
-        @keyframes fadeIn { 
-            from { opacity: 0; transform: translateY(20px); } 
-            to { opacity: 1; transform: translateY(0); } 
-        }
+        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+        .sidebar { background: linear-gradient(180deg, #2c2c2c 0%, #1a1a1a 100%); }
+        .sidebar-item { transition: all 0.3s; border-left: 3px solid transparent; }
+        .sidebar-item:hover, .sidebar-item.active { background: rgba(255,255,255,0.1); border-left-color: #ffd700; transform: translateX(5px); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .fade-in { animation: fadeIn 0.5s ease-out; }
         
         /* Custom scrollbar */
@@ -66,7 +40,7 @@
             position: absolute;
             bottom: 100%;
             left: 0;
-            background: rgba(15, 32, 39, 0.98);
+            background: rgba(44, 44, 44, 0.98);
             backdrop-filter: blur(10px);
             border-radius: 12px;
             width: 220px;
@@ -145,10 +119,19 @@
                 <a href="{{ route('coach.health.overview') }}" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-lg {{ request()->routeIs('coach.health*') ? 'active' : '' }}">
                     <i class="fas fa-heartbeat w-5"></i><span>Health Tracking</span>
                 </a>
+                <a href="{{ route('chat.index') }}" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-lg {{ request()->routeIs('chat*') ? 'active' : '' }}">
+                    <i class="fas fa-comments w-5"></i><span>Messages</span>
+                    @php
+                        $unreadCount = App\Models\Message::where('receiver_id', Auth::id())->where('is_read', false)->count();
+                    @endphp
+                    @if(isset($unreadCount) && $unreadCount > 0)
+                        <span class="ml-auto bg-red-500 text-white px-2 py-0.5 rounded-full text-xs">{{ $unreadCount }}</span>
+                    @endif
+                </a>
             </nav>
         </div>
         
-        <!-- Profile Dropdown with Logout -->
+        <!-- Profile Dropdown at Bottom -->
         <div class="mt-auto p-6 border-t border-white/20">
             <div class="profile-dropdown">
                 <div class="flex items-center space-x-3 cursor-pointer group">

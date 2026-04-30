@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Admin Dashboard') - Sports Management</title>
@@ -94,6 +95,15 @@
                 </a>
                 <a href="{{ route('admin.reports') }}" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-lg {{ request()->routeIs('admin.reports') ? 'active' : '' }}">
                     <i class="fas fa-chart-bar w-5"></i><span>Reports</span>
+                    <a href="{{ route('chat.index') }}" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-lg">
+    <i class="fas fa-comments w-5"></i><span>Messages</span>
+    @php
+        $unreadCount = App\Models\Message::where('receiver_id', Auth::id())->where('is_read', false)->count();
+    @endphp
+    @if($unreadCount > 0)
+        <span class="ml-auto bg-red-500 text-white px-2 py-0.5 rounded-full text-xs">{{ $unreadCount }}</span>
+    @endif
+</a>
                 </a>
                 <a href="{{ route('admin.settings') }}" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-lg {{ request()->routeIs('admin.settings') ? 'active' : '' }}">
                     <i class="fas fa-cog w-5"></i><span>Settings</span>
